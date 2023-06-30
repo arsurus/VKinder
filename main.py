@@ -78,7 +78,7 @@ class Main:
                    'comments': item['comments']['count']
                    } for item in photos['items']
                   ]
-# сортировка фото по лайкам и комментариям
+# сортировка фото по лайкам и комментариямсе нщж
         output.sort(key=lambda x: (x['likes'], x['comments']), reverse=True)
 
         return output[:3]
