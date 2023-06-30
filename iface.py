@@ -7,7 +7,7 @@ from datetime import datetime
 from config import community_token, access_token
 from main import Main
 
-from data_store import check_user, add_user, engine
+from dbface import check_user, add_user, engine
 # отправка сообщений
 
 

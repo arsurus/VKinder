@@ -5,6 +5,7 @@ from datetime import datetime
 import vk_api
 from vk_api.exceptions import ApiError
 
+
 # Получение пользовательских данных
 class Main:
     def __init__(self, access_token):
@@ -14,8 +15,8 @@ class Main:
 
         try:
             info, = self.vkapi.method('users.get',
-                         {'user_id': user_id,
-                          'fields': 'city,bdate,sex,relation'}
+                                      {'user_id': user_id,
+                                       'fields': 'city,bdate,sex,relation'}
                                       )
         except ApiError as err:
             info = {}
@@ -50,7 +51,6 @@ class Main:
             print('Выявлена ошибка!')
             print(f'Error = {err}')
 
-
         output = [{'name': item['first_name'] + ' ' + item['last_name'],
                    'profile_id': item['id']
                    } for item in pairs['items'] if item['is_closed'] is False
@@ -78,15 +78,13 @@ class Main:
                    'comments': item['comments']['count']
                    } for item in photos['items']
                   ]
-# сортировка фото по лайкам и комментариямсе нщж
+# сортировка фото по лайкам и комментариям
         output.sort(key=lambda x: (x['likes'], x['comments']), reverse=True)
 
         return output[:3]
 
 
-
-#pprint(get_profile_info(755150))
-
+# pprint(get_profile_info(755150))
 user_id = 755150
 prm = Main(access_token)
 userinfo = prm.get_user_info(user_id)
