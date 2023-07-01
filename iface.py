@@ -29,10 +29,11 @@ class BotInterface:
                         'random_id': get_random_id()}
                        )
 
-    def _bdate_toyear(self, bdate):
+    def _bdatereform(self, bdate):
         user_year = bdate.split('.')[2]
-        now = datetime.now().year
-        return now - int(user_year)
+        now_year = datetime.now().year
+        years = now_year - int(user_year)
+        return years
 
     def photos_for_send(self, searched):
         photos = self.main.search_photos(searched['profile_id'])
