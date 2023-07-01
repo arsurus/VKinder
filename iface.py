@@ -109,7 +109,6 @@ class BotInterface:
                 if not check_user(engine, event.user_id, searched['profile_id']):
                     add_user(engine, event.user_id, searched['profile_id'])
                     yield searched
-
             else:
                 searchlists = self.main.search_list(
                     self.prm, self.offset)
@@ -160,3 +159,4 @@ class BotInterface:
 if __name__ == '__main__':
     bot_interface = BotInterface(community_token, access_token)
     bot_interface.cmd_events()
+
