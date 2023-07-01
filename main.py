@@ -84,13 +84,14 @@ class Main:
         return output[:3]
 
 
+if __name__ == '__main__':
 # pprint(get_profile_info(755150))
-user_id = 755150
-prm = Main(access_token)
-userinfo = prm.get_user_info(user_id)
-pprint(userinfo)
-searchlists = prm.search_list(userinfo, 10)
-pprint(searchlists)
-searched = (searchlists.pop())['profile_id']
-photos = prm.search_photos(searched)
-pprint(photos)
+    user_id = 755150
+    prm = Main(access_token)
+    userinfo = prm.get_user_info(user_id)
+    #pprint(userinfo)
+    searchlists = prm.search_list(userinfo, 10)
+    #pprint(searchlists)
+    searched = (searchlists.pop())['profile_id']
+    photos = prm.search_photos(searched)
+    #print(photos)

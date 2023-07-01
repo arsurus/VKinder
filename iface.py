@@ -11,12 +11,12 @@ from dbface import check_user, add_user, engine
 # отправка сообщений
 
 
-class BotInterface():
+class BotInterface:
     def __init__(self, community_token, access_token):
         self.vk = vk_api.VkApi(token=community_token)
         self.longpoll = VkLongPoll(self.vk)
         self.vk_tools = Main(access_token)
-        self.params = {}
+        self.prm = {}
         self.searchlists = []
         self.keys = []
         self.offset = 0
@@ -34,8 +34,8 @@ class BotInterface():
         now = datetime.now().year
         return now - int(user_year)
 
-    def photos_for_send(self, worksheet):
-        photos = self.vk_tools.search_photos(worksheet['id'])
+    def photos_for_send(self, searched):
+        photos = self.vk_tools.search_photos(searched['profile_id'])
         photo_string = ''
         for photo in photos:
             photo_string += f'photo{photo["owner_id"]}_{photo["id"]},'
@@ -85,19 +85,19 @@ class BotInterface():
                         return self._bdate_toyear(event.text)
 
     def send_mes_exc(self, event):
-        if self.params['name'] is None:
+        if self.prm['Name'] is None:
             self.message_send(event.user_id, 'Введите ваше имя и фамилию:')
             return self.new_message(0)
 
-        if self.params['sex'] is None:
+        if self.prm['Sex'] is None:
             self.message_send(event.user_id, 'Введите свой пол (1-м, 2-ж):')
             return self.new_message(1)
 
-        elif self.params['city'] is None:
+        elif self.prm['City'] is None:
             self.message_send(event.user_id, 'Введите город:')
             return self.new_message(2)
 
-        elif self.params['year'] is None:
+        elif self.prm['Year'] is None:
             self.message_send(event.user_id, 'Введите дату рождения (дд.мм.гггг):')
             return self.new_message(3)
 
@@ -107,15 +107,15 @@ class BotInterface():
                 searched = searchlists.pop()
 
                 'проверка анкеты в бд в соотвествии с event.user_id'
-                if not check_user(engine, event.user_id, searched['id']):
+                if not check_user(engine, event.user_id, searched['profile_id']):
                     'добавить анкету в бд в соотвествии с event.user_id'
-                    add_user(engine, event.user_id, searched['id'])
+                    add_user(engine, event.user_id, searched['profile_id'])
 
                     yield searched
 
             else:
                 searchlists = self.vk_tools.search_list(
-                    self.params, self.offset)
+                    self.prm, self.offset)
 
 # обработка событий / получение сообщений
     def event_handler(self):
@@ -123,15 +123,15 @@ class BotInterface():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 if event.text.lower() == 'привет':
                     '''Логика для получения данных о пользователе'''
-                    self.params = self.vk_tools.get_user_info(event.user_id)
+                    self.prm = self.vk_tools.get_user_info(event.user_id)
                     self.message_send(
-                        event.user_id, f'Привет друг, {self.params["name"]}')
+                        event.user_id, f'Привет друг, {self.prm["Name"]}')
 
                     # обработка данных, которые не получили
-                    self.keys = self.params.keys()
+                    self.keys = self.prm.keys()
                     for i in self.keys:
-                        if self.params[i] is None:
-                            self.params[i] = self.send_mes_exc(event)
+                        if self.prm[i] is None:
+                            self.prm[i] = self.send_mes_exc(event)
 
                     self.message_send(event.user_id, 'Вы успешно зарегистрировались!')
 
@@ -148,7 +148,7 @@ class BotInterface():
 
                         self.message_send(
                             event.user_id,
-                            f'имя: {msg["name"]} ссылка: vk.com/id{msg["id"]}',
+                            f'имя: {msg["name"]} ссылка: vk.com/id{msg["profile_id"]}',
                             attachment=photo_string
                         )
 

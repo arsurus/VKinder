@@ -76,6 +76,6 @@ SELECT * FROM public.viewed WHERE worksheet_id = 456;
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
-    # add_user(engine, 2113, 124512)
+    #add_user(engine, 2113, 124512)
     res = check_user(engine, 2113, 1245121)
     print(res)
