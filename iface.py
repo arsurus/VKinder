@@ -35,55 +35,54 @@ class BotInterface:
         years = now_year - int(user_year)
         return years
 
-    def photos_for_send(self, searched):
+    def sendphotos(self, searched):
         photos = self.main.search_photos(searched['profile_id'])
-        photo_string = ''
+        photostr = ''
         for photo in photos:
-            photo_string += f'photo{photo["owner_id"]}_{photo["id"]},'
+            photostr += f'photo{photo["owner_id"]}_{photo["id"]},'
 
-        return photo_string
+        return photostr
 
-    # k - отличительный параметр, что именно None
-    def new_message(self, k):
+    # Выявляем нехватку данных, обозначаем неопределенность через nn
+    def new_message(self, nn):
         for event in self.longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-                if k == 0:
-                    # Проверка на числа
+                if nn == 0:
+                    # Проверка на наличие цифер
                     contains_digit = False
                     for i in event.text:
                         if i.isdigit():
                             contains_digit = True
-                            break  # Прерываем цикл, если найдена цифра
+                            break
                     if contains_digit:
-                        self.sendmsg(event.user_id, 'Пожалуйста, введите имя и фамилию без чисел:')
+                        self.sendmsg(event.user_id, 'Имя и фамилия не должны содержать цифры, введите еще раз:')
                     else:
                         return event.text
 
-                if k == 1:
+                if nn == 1:
                     if event.text == "1" or event.text == "2":
                         return int(event.text)
                     else:
-                        self.sendmsg(event.user_id, 'Неверный формат ввода пола. Введите 1 или 2:')
+                        self.sendmsg(event.user_id, 'Неверно ввели пол. Введите 1 или 2 (1-М, 2-Ж):')
 
-                if k == 2:
-                    # Проверка на числа
+                if nn == 2:
+                    # Проверяем наличие цифер в назввании города:
                     contains_digit = False
                     for i in event.text:
                         if i.isdigit():
                             contains_digit = True
-                            break  # Прерываем цикл, если найдена цифра
+                            break
                     if contains_digit:
-                        self.sendmsg(event.user_id, 'Неверно указан город. Введите название города без чисел:')
+                        self.sendmsg(event.user_id, 'Название города содержит цифры. Введите название города еще раз:')
                     else:
                         return event.text
 
-                if k == 3:
+                if nn == 3:
                     pattern = r'^\d{2}\.\d{2}\.\d{4}$'
                     if not re.match(pattern, event.text):
-                        self.sendmsg(event.user_id, 'Пожалуйста, введите вашу дату '
-                                                         'рождения в формате (дд.мм.гггг):')
+                        self.sendmsg(event.user_id, 'Дата рождения должна быть в формате дд.мм.гггг, введи еще раз:')
                     else:
-                        return self._bdate_toyear(event.text)
+                        return self._bdatereform(event.text)
 
     def send_mes_exc(self, event):
         if self.prm['Name'] is None:
@@ -144,7 +143,7 @@ class BotInterface:
                     msg = next(iter(self.get_profile(self.searchlists, event)))
                     if msg:
 
-                        photo_string = self.photos_for_send(msg)
+                        photo_string = self.sendphotos(msg)
                         self.offset += 10
 
                         self.sendmsg(
