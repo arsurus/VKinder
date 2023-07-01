@@ -13,16 +13,16 @@ from dbface import check_user, add_user, engine
 
 class BotInterface:
     def __init__(self, community_token, access_token):
-        self.vk = vk_api.VkApi(token=community_token)
-        self.longpoll = VkLongPoll(self.vk)
-        self.vk_tools = Main(access_token)
-        self.prm = {}
+        self.vkapi = vk_api.VkApi(token=community_token)
+        self.longpoll = VkLongPoll(self.vkapi)
+        self.main = Main(access_token)
         self.searchlists = []
         self.keys = []
+        self.prm = {}
         self.offset = 0
 
     def message_send(self, user_id, message, attachment=None):
-        self.vk.method('messages.send',
+        self.vkapi.method('messages.send',
                        {'user_id': user_id,
                         'message': message,
                         'attachment': attachment,
@@ -35,7 +35,7 @@ class BotInterface:
         return now - int(user_year)
 
     def photos_for_send(self, searched):
-        photos = self.vk_tools.search_photos(searched['profile_id'])
+        photos = self.main.search_photos(searched['profile_id'])
         photo_string = ''
         for photo in photos:
             photo_string += f'photo{photo["owner_id"]}_{photo["id"]},'
@@ -114,7 +114,7 @@ class BotInterface:
                     yield searched
 
             else:
-                searchlists = self.vk_tools.search_list(
+                searchlists = self.main.search_list(
                     self.prm, self.offset)
 
 # обработка событий / получение сообщений
@@ -123,7 +123,7 @@ class BotInterface:
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 if event.text.lower() == 'привет':
                     '''Логика для получения данных о пользователе'''
-                    self.prm = self.vk_tools.get_user_info(event.user_id)
+                    self.prm = self.main.get_user_info(event.user_id)
                     self.message_send(
                         event.user_id, f'Привет друг, {self.prm["Name"]}')
 
