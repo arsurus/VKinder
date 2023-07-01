@@ -43,12 +43,12 @@ class BotInterface:
 
         return photostr
 
-    # Выявляем нехватку данных, обозначаем неопределенность через nn
-    def new_message(self, nn):
+    # Выявляем нехватку данных, соотносим через служебную nn, проверяем и исправляем в случае неверного ввода
+    def killgaps(self, nn):
         for event in self.longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 if nn == 0:
-                    # Проверка на наличие цифер
+                    # Проверка на наличие цифр
                     contains_digit = False
                     for i in event.text:
                         if i.isdigit():
@@ -66,7 +66,7 @@ class BotInterface:
                         self.sendmsg(event.user_id, 'Неверно ввели пол. Введите 1 или 2 (1-М, 2-Ж):')
 
                 if nn == 2:
-                    # Проверяем наличие цифер в назввании города:
+                    # Проверяем наличие цифр в назввании города:
                     contains_digit = False
                     for i in event.text:
                         if i.isdigit():
@@ -80,67 +80,64 @@ class BotInterface:
                 if nn == 3:
                     pattern = r'^\d{2}\.\d{2}\.\d{4}$'
                     if not re.match(pattern, event.text):
-                        self.sendmsg(event.user_id, 'Дата рождения должна быть в формате дд.мм.гггг, введи еще раз:')
+                        self.sendmsg(event.user_id, 'Дата рождения должна быть в формате дд.мм.гггг, введите еще раз:')
                     else:
                         return self._bdatereform(event.text)
 
-    def send_mes_exc(self, event):
+    def gaplooking(self, event):
         if self.prm['Name'] is None:
-            self.sendmsg(event.user_id, 'Введите ваше имя и фамилию:')
-            return self.new_message(0)
+            self.sendmsg(event.user_id, 'Ваше имя и фамилия? Введите пожалуйста.')
+            return self.killgaps(0)
 
         if self.prm['Sex'] is None:
-            self.sendmsg(event.user_id, 'Введите свой пол (1-м, 2-ж):')
-            return self.new_message(1)
+            self.sendmsg(event.user_id, 'Укажите Ваш пол (1-м, 2-ж):')
+            return self.killgaps(1)
 
         elif self.prm['City'] is None:
-            self.sendmsg(event.user_id, 'Введите город:')
-            return self.new_message(2)
+            self.sendmsg(event.user_id, 'Из какого Вы города? Напиште название:')
+            return self.killgaps(2)
 
         elif self.prm['Year'] is None:
-            self.sendmsg(event.user_id, 'Введите дату рождения (дд.мм.гггг):')
-            return self.new_message(3)
+            self.sendmsg(event.user_id, 'Укажите Вашу дату рождения (дд.мм.гггг):')
+            return self.killgaps(3)
 
-    def get_profile(self, searchlists, event):
+    # Проверяем профиль на наличии его в БД, фиксация его в БД и передача пользователю, либо составление нового листа профилей
+    def findprofile(self, searchlists, event):
         while True:
             if searchlists:
                 searched = searchlists.pop()
-
-                'проверка анкеты в бд в соотвествии с event.user_id'
                 if not check_user(engine, event.user_id, searched['profile_id']):
-                    'добавить анкету в бд в соотвествии с event.user_id'
                     add_user(engine, event.user_id, searched['profile_id'])
-
                     yield searched
 
             else:
                 searchlists = self.main.search_list(
                     self.prm, self.offset)
 
-# обработка событий / получение сообщений
-    def event_handler(self):
+# Обработка событий / получение сообщений
+    def cmd_events(self):
         for event in self.longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 if event.text.lower() == 'привет':
-                    '''Логика для получения данных о пользователе'''
+                    # Получение данных о пользователе:
                     self.prm = self.main.get_user_info(event.user_id)
                     self.sendmsg(
                         event.user_id, f'Привет друг, {self.prm["Name"]}')
 
-                    # обработка данных, которые не получили
+                    # Обработка недостающих данных о пользователе:
                     self.keys = self.prm.keys()
                     for i in self.keys:
                         if self.prm[i] is None:
-                            self.prm[i] = self.send_mes_exc(event)
+                            self.prm[i] = self.gaplooking(event)
 
                     self.sendmsg(event.user_id, 'Вы успешно зарегистрировались!')
 
                 elif event.text.lower() == 'поиск':
-                    '''Логика для поиска анкет'''
+                    # поиск анкет:
                     self.sendmsg(
                         event.user_id, 'Начинаем поиск...')
 
-                    msg = next(iter(self.get_profile(self.searchlists, event)))
+                    msg = next(iter(self.findprofile(self.searchlists, event)))
                     if msg:
 
                         photo_string = self.sendphotos(msg)
@@ -154,12 +151,12 @@ class BotInterface:
 
                 elif event.text.lower() == 'пока':
                     self.sendmsg(
-                        event.user_id, 'До новых встреч')
+                        event.user_id, 'Всего Вам наилучшего!')
                 else:
                     self.sendmsg(
-                        event.user_id, 'Неизвестная команда')
+                        event.user_id, 'Не знаю такой директивы!')
 
 
 if __name__ == '__main__':
     bot_interface = BotInterface(community_token, access_token)
-    bot_interface.event_handler()
+    bot_interface.cmd_events()
