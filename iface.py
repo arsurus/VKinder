@@ -21,7 +21,7 @@ class BotInterface:
         self.prm = {}
         self.offset = 0
 
-    def message_send(self, user_id, message, attachment=None):
+    def sendmsg(self, user_id, message, attachment=None):
         self.vkapi.method('messages.send',
                        {'user_id': user_id,
                         'message': message,
@@ -54,7 +54,7 @@ class BotInterface:
                             contains_digit = True
                             break  # Прерываем цикл, если найдена цифра
                     if contains_digit:
-                        self.message_send(event.user_id, 'Пожалуйста, введите имя и фамилию без чисел:')
+                        self.sendmsg(event.user_id, 'Пожалуйста, введите имя и фамилию без чисел:')
                     else:
                         return event.text
 
@@ -62,7 +62,7 @@ class BotInterface:
                     if event.text == "1" or event.text == "2":
                         return int(event.text)
                     else:
-                        self.message_send(event.user_id, 'Неверный формат ввода пола. Введите 1 или 2:')
+                        self.sendmsg(event.user_id, 'Неверный формат ввода пола. Введите 1 или 2:')
 
                 if k == 2:
                     # Проверка на числа
@@ -72,33 +72,33 @@ class BotInterface:
                             contains_digit = True
                             break  # Прерываем цикл, если найдена цифра
                     if contains_digit:
-                        self.message_send(event.user_id, 'Неверно указан город. Введите название города без чисел:')
+                        self.sendmsg(event.user_id, 'Неверно указан город. Введите название города без чисел:')
                     else:
                         return event.text
 
                 if k == 3:
                     pattern = r'^\d{2}\.\d{2}\.\d{4}$'
                     if not re.match(pattern, event.text):
-                        self.message_send(event.user_id, 'Пожалуйста, введите вашу дату '
+                        self.sendmsg(event.user_id, 'Пожалуйста, введите вашу дату '
                                                          'рождения в формате (дд.мм.гггг):')
                     else:
                         return self._bdate_toyear(event.text)
 
     def send_mes_exc(self, event):
         if self.prm['Name'] is None:
-            self.message_send(event.user_id, 'Введите ваше имя и фамилию:')
+            self.sendmsg(event.user_id, 'Введите ваше имя и фамилию:')
             return self.new_message(0)
 
         if self.prm['Sex'] is None:
-            self.message_send(event.user_id, 'Введите свой пол (1-м, 2-ж):')
+            self.sendmsg(event.user_id, 'Введите свой пол (1-м, 2-ж):')
             return self.new_message(1)
 
         elif self.prm['City'] is None:
-            self.message_send(event.user_id, 'Введите город:')
+            self.sendmsg(event.user_id, 'Введите город:')
             return self.new_message(2)
 
         elif self.prm['Year'] is None:
-            self.message_send(event.user_id, 'Введите дату рождения (дд.мм.гггг):')
+            self.sendmsg(event.user_id, 'Введите дату рождения (дд.мм.гггг):')
             return self.new_message(3)
 
     def get_profile(self, searchlists, event):
@@ -124,7 +124,7 @@ class BotInterface:
                 if event.text.lower() == 'привет':
                     '''Логика для получения данных о пользователе'''
                     self.prm = self.main.get_user_info(event.user_id)
-                    self.message_send(
+                    self.sendmsg(
                         event.user_id, f'Привет друг, {self.prm["Name"]}')
 
                     # обработка данных, которые не получили
@@ -133,11 +133,11 @@ class BotInterface:
                         if self.prm[i] is None:
                             self.prm[i] = self.send_mes_exc(event)
 
-                    self.message_send(event.user_id, 'Вы успешно зарегистрировались!')
+                    self.sendmsg(event.user_id, 'Вы успешно зарегистрировались!')
 
                 elif event.text.lower() == 'поиск':
                     '''Логика для поиска анкет'''
-                    self.message_send(
+                    self.sendmsg(
                         event.user_id, 'Начинаем поиск...')
 
                     msg = next(iter(self.get_profile(self.searchlists, event)))
@@ -146,17 +146,17 @@ class BotInterface:
                         photo_string = self.photos_for_send(msg)
                         self.offset += 10
 
-                        self.message_send(
+                        self.sendmsg(
                             event.user_id,
                             f'имя: {msg["name"]} ссылка: vk.com/id{msg["profile_id"]}',
                             attachment=photo_string
                         )
 
                 elif event.text.lower() == 'пока':
-                    self.message_send(
+                    self.sendmsg(
                         event.user_id, 'До новых встреч')
                 else:
-                    self.message_send(
+                    self.sendmsg(
                         event.user_id, 'Неизвестная команда')
 
 
