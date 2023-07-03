@@ -1,6 +1,5 @@
 # Импорт модулей и переменных
 from config import access_token
-#from pprint import pprint
 from datetime import datetime
 import vk_api
 from vk_api.exceptions import ApiError
@@ -85,13 +84,9 @@ class Main:
 
 
 if __name__ == '__main__':
-# pprint(get_profile_info(755150))
     user_id = 755150
     prm = Main(access_token)
     userinfo = prm.get_user_info(user_id)
-    #pprint(userinfo)
     searchlists = prm.search_list(userinfo, 10)
-    #pprint(searchlists)
     searched = (searchlists.pop())['profile_id']
     photos = prm.search_photos(searched)
-    #print(photos)

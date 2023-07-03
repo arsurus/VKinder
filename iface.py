@@ -22,12 +22,14 @@ class BotInterface:
         self.offset = 0
 
     def sendmsg(self, user_id, message, attachment=None):
-        self.vkapi.method('messages.send',
-                       {'user_id': user_id,
-                        'message': message,
-                        'attachment': attachment,
-                        'random_id': get_random_id()}
-                       )
+        self.vkapi.method(
+            'messages.send', {
+                    'user_id': user_id,
+                    'message': message,
+                    'attachment': attachment,
+                    'random_id': get_random_id()
+                            }
+            )
 
     def _bdatereform(self, bdate):
         user_year = bdate.split('.')[2]
@@ -101,7 +103,7 @@ class BotInterface:
             self.sendmsg(event.user_id, 'Укажите Вашу дату рождения (дд.мм.гггг):')
             return self.killgaps(3)
 
-    # Проверяем профиль на наличии его в БД, фиксация его в БД и передача пользователю, либо составление нового листа профилей
+    # Проверяем профиль на наличии его в БД, фиксация его в БД и передача пользователю, либо составление нового списка
     def findprofile(self, searchlists, event):
         while True:
             if searchlists:
@@ -159,4 +161,3 @@ class BotInterface:
 if __name__ == '__main__':
     bot_interface = BotInterface(community_token, access_token)
     bot_interface.cmd_events()
-
