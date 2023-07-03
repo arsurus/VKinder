@@ -1,4 +1,4 @@
-# импорты
+# Импорт модулей и переменных
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.utils import get_random_id
@@ -6,11 +6,10 @@ import re
 from datetime import datetime
 from config import community_token, access_token
 from main import Main
-
 from dbface import check_user, add_user, engine
-# отправка сообщений
 
 
+# Отправляем сообщения
 class BotInterface:
     def __init__(self, community_token, access_token):
         self.vkapi = vk_api.VkApi(token=community_token)

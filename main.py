@@ -31,7 +31,7 @@ class Main:
                   }
         return output
 
-# Поиск пар по параметрам соотв. пользователю
+# Поиск пар по параметрам соответствущим пользователю
     def search_list(self, userinfo, offset):
         try:
             pairs = self.vkapi.method('users.search',
