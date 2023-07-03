@@ -5,6 +5,8 @@ from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import Session
 from config import db_url_object
 
+
+# Создание таблиц
 metadata = MetaData()
 base = declarative_base()
 engine = create_engine(db_url_object)
