@@ -1,6 +1,6 @@
 # Импорт модулей и переменных
 from config import access_token
-from pprint import pprint
+#from pprint import pprint
 from datetime import datetime
 import vk_api
 from vk_api.exceptions import ApiError
