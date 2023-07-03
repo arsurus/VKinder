@@ -1,3 +1,5 @@
+# Внесение актуальных токенов
 community_token = 'vk1.a.fHqR92UKFImuMZoK9NOQeLfW3tttmDTvTb3npMhUJOmlM62ur1gmDA_uMR-Kiww9o8Ha-kp9oKss8F6AGlp08NAfIQw_UHCiMsw2GZGuRbRFCixASFG-RJjqZKG1jgIVhAfn6llFfeKRdjBgW0706umk8yYDFvZwjL35HVw28WS2KKxiWIEX0fzsTvM41stj3OCo2EDZ3WvKr3Z40dWf4w'
 access_token = 'vk1.a.FKTphMyLmJGQb5I3jm97qlo6isffnIwzW7tQ3aeDJRCHFjIhHtDpSoWjO_lW3mvAl4qp5SEyMH-PbRekxmsSAewcRVipk-IjSY3YdXNucZDTt1MRJDgQvZJoyEUrnUFGZ-vLQbSSBa0gQj57O0TV9lB0JtoIbdmme6rfDOP_GzLmf3U1wla3wfdLLIyH1U-O'
+# Указание БД
 db_url_object = 'postgresql://postgres:postgres@localhost:5432/vkbot'
